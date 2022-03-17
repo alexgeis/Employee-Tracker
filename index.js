@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 const mysql = require("mysql2");
 require("./server.js");
+const figlet = require("figlet");
 
 const db = mysql.createConnection(
   {
@@ -22,7 +23,7 @@ const empArr = [];
 const addDeptQuestions = [
   {
     type: "input",
-    message: "Name of new database:",
+    message: "Name of new department:",
     name: "newDept",
   },
 ];
@@ -203,10 +204,9 @@ function viewDept() {
     if (err) {
       console.log(err);
     }
-    console.log(results);
+    console.log(cTable.getTable(results));
   });
   setTimeout(init, 3000);
-  //   init();
 }
 
 function viewRoles() {
@@ -216,7 +216,7 @@ function viewRoles() {
     if (err) {
       console.log(err);
     }
-    console.log(results);
+    console.log(cTable.getTable(results));
   });
   setTimeout(init, 3000);
 }
@@ -228,7 +228,7 @@ function viewEmps() {
     if (err) {
       console.log(err);
     }
-    console.log(results);
+    console.log(cTable.getTable(results));
   });
   setTimeout(init, 3000);
 }
@@ -321,6 +321,17 @@ function updateEmp() {
 }
 
 function init() {
+  //render intro banner
+  console.log(
+    figlet.textSync("Employee Tracker", {
+      font: "cyberlarge",
+      horizontalLayout: "default",
+      verticalLayout: "default",
+      width: 80,
+      whitespaceBreak: true,
+    })
+  );
+  //render start questions
   inquirer.prompt(appQuestions).then((response) => {
     // console.log(response);
     if (response.purpose === "View all departments") {

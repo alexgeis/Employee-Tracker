@@ -20,24 +20,3 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   // console.log(`Server running on port ${PORT}`);
 });
-/*
-console.table demo
-
-const table = cTable.getTable([
-  {
-    name: 'foo',
-    age: 10
-  }, {
-    name: 'bar',
-    age: 20
-  }
-]);
-
-console.log(table);
-
-// prints
-name  age
-----  ---
-foo   10
-bar   20
-*/
