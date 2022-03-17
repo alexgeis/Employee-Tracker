@@ -44,4 +44,12 @@ Next, I structured the inquirer prompt for the required user commands. I used th
 
 After inquirer prompts were correctly generating and directing the user through my decision tree, I filled in the specific functions to make the relevant SQL queries. For instance, choosing to add a new department would structure a SQL query to INSERT INTO an entry for the department table. I first confirmed the initial 3 view functions, then moved to the other CRUD operations.
 
+Finally, I was unable to create a working function to update an existing employee. I will keep attempting to create a solution later along with the bonus and update this readme once completed.
+
 ## Deployment Details
+
+Repo: [Employee Tracker](https://github.com/alexgeis/Employee-Tracker)
+
+Walkthrough Video: [Employee Tracker Application](https://drive.google.com/file/d/1wJ0FYRYkd2Ahxj10EIT4eSO22lN9YvLM/view)
+
+Application Snapshot: ![Employee Tracker](./assets/employee-tracker-screenshot.png)

@@ -13,7 +13,17 @@ const db = mysql.createConnection(
     password: "password",
     database: "employee_db",
   },
-  console.log(`Connected to the employee_db database.`)
+  // console.log(`Connected to the employee_db database.`)
+  //render intro banner
+  console.log(
+    figlet.textSync("Employee Tracker", {
+      font: "cyberlarge",
+      horizontalLayout: "default",
+      verticalLayout: "default",
+      width: 80,
+      whitespaceBreak: true,
+    })
+  )
 );
 
 // starter data storage variables
@@ -67,7 +77,7 @@ const addEmpQuestions = [
   {
     type: "input",
     message:
-      "Manager of new employee:\n'030' = Knyagina Betsy\n'031' = Countess Vronsky\n'032' = Countess Lidia Ivanovna\n'033' = Nikolai Dmitrievich Levin\n",
+      "Manager of new employee:\n'030' = Knyagina Betsy\n'031' = Countess Vronsky\n'032' = Countess Lidia Ivanovna\n'033' = Nikolai Dmitrievich Levin\nnull = no manager\n",
     name: "newEmpMgmt",
   },
 ];
@@ -117,23 +127,32 @@ const appQuestions = [
 ];
 
 //rendering current employee list
-function empArrRender() {
-  //  promise method attempt 2
-  //  db.promise()
-  //     .query("SELECT first_name, last_name FROM employees")
-  //     .then((results) => {
-  //       //   console.log(results);
-  //       const resArr = results[0];
-  //       //   console.log(resArr);
-  //       return Promise.all(
-  //         resArr.map(function (name) {
-  //           return empArr.push(name);
-  //         })
-  //       );
-  //     })
-  //     .catch(console.log)
-  //     .then(() => db.end());
-  //   //.promise() method attempt 1
+const empArrRender = function () {
+  //   //  promise all attempt
+  db.promise()
+    .query("SELECT first_name, last_name FROM employees")
+    .then((results) => {
+      //   console.log(results);
+      const resArr = results[0];
+      console.log(resArr);
+      empArr.push(resArr);
+      //   console.log(empArr);
+      return results;
+      // ---  return Promise.all( ---
+      //     resArr.map(function () {
+      //       const first_name = resArr.first_name;
+      //       const last_name = resArr.last_name;
+      //       const emp = `${first_name} ${last_name}`;
+      //       console.log(emp);
+      //       empArr.push(emp);
+      //       console.log(empArr);
+      //     })
+      //   );
+      //   console.log("133 empArr example", empArr);
+    })
+    .catch(console.log)
+    .then(() => db.end());
+  //   //---.promise() method attempt 1---
   //   db.promise()
   //     .query("SELECT first_name, last_name FROM employees")
   //     .then((results) => {
@@ -153,7 +172,7 @@ function empArrRender() {
   //     })
   //     .catch(console.log)
   //     .then(() => db.end());
-  // PROMISE OBJECT ATTEMPT
+  //---PROMISE OBJECT ATTEMPT---
   //   return new Promise(function (resolve, reject) {
   //     db.query(
   //       "SELECT first_name, last_name FROM employees",
@@ -194,7 +213,7 @@ function empArrRender() {
   //   }
   //   console.log("EMPARRAY -----", empArr);
   //   });
-}
+};
 
 //SQL QUERY FUNCTIONS
 function viewDept() {
@@ -239,7 +258,7 @@ function addDept() {
     console.log(response.newDept);
     const newDept = response.newDept;
     db.query(
-      `INSERT INTO department(name) VALUES(${newDept})`,
+      `INSERT INTO department(name) VALUES("${newDept}")`,
       function (err, results) {
         if (err) {
           console.log(err);
@@ -300,9 +319,12 @@ function updateEmp() {
   //   empArrRender().then(function (results) {
   //     console.log(results);
   //   });
+  //   Promise.all(empArrRender).then(() => {
+  //     return empArr;
+  //   });
   empArrRender();
   //   console.log(empArrRender());
-  console.log(empArr);
+  console.log("UPDATED ARRAY", empArr);
   inquirer.prompt(updateEmpQuestions).then((response) => {
     console.log(response);
     // const updateEmpChoice = response.updateEmpChoice;
@@ -321,16 +343,6 @@ function updateEmp() {
 }
 
 function init() {
-  //render intro banner
-  console.log(
-    figlet.textSync("Employee Tracker", {
-      font: "cyberlarge",
-      horizontalLayout: "default",
-      verticalLayout: "default",
-      width: 80,
-      whitespaceBreak: true,
-    })
-  );
   //render start questions
   inquirer.prompt(appQuestions).then((response) => {
     // console.log(response);
