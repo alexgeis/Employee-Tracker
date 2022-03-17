@@ -1,12 +1,4 @@
-// const express = require("express");
-const path = require("path");
 const inquirer = require("inquirer");
-//below brings in only prompt method
-// const {prompt} = require("inquirer");
-// const app = express();
-// app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
-const fs = require("fs");
 const cTable = require("console.table");
 const mysql = require("mysql2");
 require("./server.js");
@@ -23,13 +15,18 @@ const db = mysql.createConnection(
   console.log(`Connected to the employee_db database.`)
 );
 
+// starter data storage variables
+const empArr = [];
+
+//QUESTIONS
 const addDeptQuestions = [
   {
     type: "input",
     message: "Name of new database:",
-    name: "newDB",
+    name: "newDept",
   },
 ];
+
 const addRoleQuestions = [
   {
     type: "input",
@@ -43,10 +40,12 @@ const addRoleQuestions = [
   },
   {
     type: "input",
-    message: "Department for new role:",
+    message:
+      "Department ID for new role:\n'001' = History\n'002' = Social Sciences\n'003' = Literature\n'004' = Admin\n",
     name: "newRoleDept",
   },
 ];
+
 const addEmpQuestions = [
   {
     type: "input",
@@ -60,21 +59,24 @@ const addEmpQuestions = [
   },
   {
     type: "input",
-    message: "Role of new employee:",
+    message:
+      "Role of new employee:\n'101' = Professor\n'201' = Dean\n'301' = Librarian\n'401' = Student Success\n",
     name: "newEmpRole",
   },
   {
     type: "input",
-    message: "Manager of new employee:",
+    message:
+      "Manager of new employee:\n'030' = Knyagina Betsy\n'031' = Countess Vronsky\n'032' = Countess Lidia Ivanovna\n'033' = Nikolai Dmitrievich Levin\n",
     name: "newEmpMgmt",
   },
 ];
+
 const updateEmpQuestions = [
   {
     type: "list",
     message: "Choose employee to update:",
     name: "updateEmpChoice",
-    choices: [],
+    choices: empArr,
   },
 ];
 
@@ -91,27 +93,109 @@ const appQuestions = [
       "Add a role",
       "Add an employee",
       "Update an employee role",
+      "Quit application",
     ],
-    validate(answer) {
-      if (answer === "View all departments") {
-        viewDept();
-      } else if (answer === "View all roles") {
-        viewRoles();
-      } else if (answer === "View all employees") {
-        viewEmps();
-      } else if (answer === "Add a department") {
-        addDept();
-      } else if (answer === "Add a role") {
-        addRole();
-      } else if (answer === "Add an employee") {
-        addEmp();
-      } else {
-        updateEmp();
-      }
-    },
+    // validate(answer) {
+    //   if (answer === "View all departments") {
+    //     viewDept();
+    //   } else if (answer === "View all roles") {
+    //     viewRoles();
+    //   } else if (answer === "View all employees") {
+    //     viewEmps();
+    //   } else if (answer === "Add a department") {
+    //     addDept();
+    //   } else if (answer === "Add a role") {
+    //     addRole();
+    //   } else if (answer === "Add an employee") {
+    //     addEmp();
+    //   } else {
+    //     updateEmp();
+    //   }
+    // },
   },
 ];
 
+//rendering current employee list
+function empArrRender() {
+  //  promise method attempt 2
+  //  db.promise()
+  //     .query("SELECT first_name, last_name FROM employees")
+  //     .then((results) => {
+  //       //   console.log(results);
+  //       const resArr = results[0];
+  //       //   console.log(resArr);
+  //       return Promise.all(
+  //         resArr.map(function (name) {
+  //           return empArr.push(name);
+  //         })
+  //       );
+  //     })
+  //     .catch(console.log)
+  //     .then(() => db.end());
+  //   //.promise() method attempt 1
+  //   db.promise()
+  //     .query("SELECT first_name, last_name FROM employees")
+  //     .then((results) => {
+  //       //   console.log(results);
+  //       const resArr = results[0];
+  //       //   console.log(resArr);
+  //       resArr.forEach((result) => {
+  //         // console.log("entering loop");
+  //         // console.log(result);
+  //         const first_name = result.first_name;
+  //         const last_name = result.last_name;
+  //         const emp = `${first_name} ${last_name}`;
+  //         console.log(emp);
+  //         empArr.push(emp);
+  //         console.log(empArr);
+  //       });
+  //     })
+  //     .catch(console.log)
+  //     .then(() => db.end());
+  // PROMISE OBJECT ATTEMPT
+  //   return new Promise(function (resolve, reject) {
+  //     db.query(
+  //       "SELECT first_name, last_name FROM employees",
+  //       function (err, results) {
+  //         if (results === undefined) {
+  //           reject(new Error("Error - rows is undefined"));
+  //         } else {
+  //           //   resolve(results);
+  //           resolve(
+  //             results.forEach((results) => {
+  //               const first_name = results.first_name;
+  //               const last_name = results.last_name;
+  //               const emp = first_name + " " + last_name;
+  //               empArr.push(emp);
+  //             })
+  //           );
+  //         }
+  //       }
+  //     );
+  //--FOR EACH ATTEMPT--
+  // results.forEach((results) => {
+  //   console.log("entering loop");
+  //   const first_name = results.first_name;
+  //   const last_name = results.last_name;
+  //   const emp = first_name + " " + last_name;
+  //   empArr.push(emp);
+  // });
+  //--FOR LOOP ATTEMPT--
+  //   for (let i = 0; i < results.length; i++) {
+  // const first_name = results.first_name;
+  //   const last_name = results.last_name;
+  //   const emp = first_name + " " + last_name;
+  //     // const element = `${results[i].first_name} ${results[i].last_name}`;
+  //     console.log("entering loop");
+  //     console.log(element);
+  //     empArr.push(element);
+  //     console.log(empArr);
+  //   }
+  //   console.log("EMPARRAY -----", empArr);
+  //   });
+}
+
+//SQL QUERY FUNCTIONS
 function viewDept() {
   //   console.log("viewDept() invoked");
   //Query the department table
@@ -121,8 +205,10 @@ function viewDept() {
     }
     console.log(results);
   });
-  init();
+  setTimeout(init, 3000);
+  //   init();
 }
+
 function viewRoles() {
   //   console.log("viewRoles() invoked");
   //Query the role table
@@ -132,8 +218,9 @@ function viewRoles() {
     }
     console.log(results);
   });
-  init();
+  setTimeout(init, 3000);
 }
+
 function viewEmps() {
   //   console.log("viewEmps() invoked");
   //Query the employees table
@@ -143,128 +230,99 @@ function viewEmps() {
     }
     console.log(results);
   });
-  init();
+  setTimeout(init, 3000);
 }
+
 function addDept() {
   console.log("addDept() invoked");
-  init();
+  inquirer.prompt(addDeptQuestions).then((response) => {
+    console.log(response.newDept);
+    const newDept = response.newDept;
+    db.query(
+      `INSERT INTO department(name) VALUES(${newDept})`,
+      function (err, results) {
+        if (err) {
+          console.log(err);
+        }
+        // console.log(results);
+        console.log(`Added ${newDept} to the database`);
+        setTimeout(init, 3000);
+      }
+    );
+  });
 }
+
 function addRole() {
   console.log("addRole() invoked");
-  init();
+  inquirer.prompt(addRoleQuestions).then((response) => {
+    // console.log(response);
+    const newRoleName = response.newRoleName;
+    const newRoleSal = response.newRoleSal;
+    const newRoleDept = response.newRoleDept;
+    db.query(
+      `INSERT INTO role (title, salary, department_id) VALUES("${newRoleName}",${newRoleSal},${newRoleDept})`,
+      function (err, results) {
+        if (err) {
+          console.log(err);
+        }
+        // console.log(results);
+        console.log(`Added ${newRoleName} to the database`);
+        setTimeout(init, 3000);
+      }
+    );
+  });
 }
+
 function addEmp() {
   console.log("addEmp() invoked");
-  init();
+  inquirer.prompt(addEmpQuestions).then((response) => {
+    // console.log(response);
+    const newEmpFirst = response.newEmpFirst;
+    const newEmpLast = response.newEmpLast;
+    const newEmpRole = response.newEmpRole;
+    const newEmpMgmt = response.newEmpMgmt;
+    db.query(
+      `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES("${newEmpFirst}","${newEmpLast}",${newEmpRole},${newEmpMgmt})`,
+      function (err, results) {
+        if (err) {
+          console.log(err);
+        }
+        // console.log(results);
+        console.log(`Added ${newEmpFirst} ${newEmpLast} to the database`);
+        setTimeout(init, 3000);
+      }
+    );
+  });
 }
+
 function updateEmp() {
   console.log("updateEmp() invoked");
-  init();
+  //   empArrRender().then(function (results) {
+  //     console.log(results);
+  //   });
+  empArrRender();
+  //   console.log(empArrRender());
+  console.log(empArr);
+  inquirer.prompt(updateEmpQuestions).then((response) => {
+    console.log(response);
+    // const updateEmpChoice = response.updateEmpChoice;
+    // db.query(
+    //   `UPDATE employees SET (first_name, last_name, role_id, manager_id) VALUES("${newEmpFirst}","${newEmpLast}",${newEmpRole},${newEmpMgmt})`,
+    //   function (err, results) {
+    //     if (err) {
+    //       console.log(err);
+    //     }
+    //     // console.log(results);
+    //     console.log(`Added ${newEmpFirst} ${newEmpLast} to the database`);
+    //     setTimeout(init, 3000);
+    //   }
+    // );
+  });
 }
 
-// function addEmployeeOLD() {
-//   inquirer
-//     .prompt({
-//       message: "What do you want to do?",
-//       type: "list",
-//       name: "choice",
-//       choices: ["Add employee", "Create roster"],
-//     })
-//     .then((data) => {
-//       console.log("YOUR Choice --- ", data.choice);
-//       if (data.choice === "Add employee") {
-//         inquirer.prompt(employeePrompt).then((data) => {
-//           console.log("answers for employee --- ", data);
-//           if (data.role === "Engineer") {
-//             const emp = new Engineer(
-//               data.name,
-//               data.id,
-//               data.email,
-//               data.extra
-//             );
-//             employees.push(emp);
-//           } else {
-//             const emp = new Intern(data.name, data.id, data.email, data.extra);
-//             employees.push(emp);
-//           }
-
-//           console.log(`${data.role} added to Team!`);
-//           setTimeout(addEmployee, 2000);
-//         });
-//       } else {
-//         createHTML();
-//       }
-//     });
-// }
-
-// function createHTML() {
-//   console.log("Creating HTML...");
-//   console.log("All Employees ---- ", employees);
-
-//   const html = `<!DOCTYPE html>
-// <html lang="en">
-// <head>
-// <meta charset="UTF-8" />
-// <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-// <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-// <link
-// href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-// rel="stylesheet"
-// integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-// crossorigin="anonymous"
-// />
-// <link rel="stylesheet" href="" />
-// <style>
-// .card {
-// box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
-// rgba(0, 0, 0, 0.22) 0px 10px 10px;
-// }
-// </style>
-// <title>Team Profile</title>
-// </head>
-// <body>
-// <nav class="navbar navbar-light bg-danger bg-gradient">
-// <div class="container-fluid">
-// <h1 class="navbar-brand my-4 mx-auto fs-2 text-white">My Team</h1>
-// </div>
-// </nav>
-// <div class="row p-5">
-// ${employees
-//   .map((employee) =>
-//     employee.generateHTMLCard(
-//       employee.officeNum || employee.github || employee.school
-//     )
-//   )
-//   .join("\n")}
-// </div>
-// </body>
-// </html>`;
-//   fs.writeFile("./dist/output.html", html, (err) =>
-//     err
-//       ? console.error(err)
-//       : console.log("Team Profile page has been written!")
-//   );
-// }
-
-// function init() {
-//   inquirer.prompt(questionsMgmt).then((response) => {
-//     console.log(response);
-//     // console.log(response.json());
-//     //create new manager using info from prompt
-//     const manager = new Manager(
-//       response.name,
-//       response.id,
-//       response.email,
-//       response.officeNum
-//     );
-//     employees.push(manager);
-//     //invoke functin to create new employees
-//     addEmployee();
-//   });
-// }
 function init() {
   inquirer.prompt(appQuestions).then((response) => {
-    console.log(response);
+    // console.log(response);
     if (response.purpose === "View all departments") {
       viewDept();
     } else if (response.purpose === "View all roles") {
@@ -277,20 +335,11 @@ function init() {
       addRole();
     } else if (response.purpose === "Add an employee") {
       addEmp();
-    } else {
+    } else if (response.purpose === "Update an employee role") {
       updateEmp();
+    } else {
+      process.exit();
     }
-    // console.log(response.json());
-    //create new manager using info from prompt
-    // const manager = new Manager(
-    //   response.name,
-    //   response.id,
-    //   response.email,
-    //   response.officeNum
-    // );
-    // employees.push(manager);
-    // //invoke functin to create new employees
-    // addEmployee();
   });
 }
 init();
